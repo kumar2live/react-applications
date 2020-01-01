@@ -7,7 +7,7 @@ import Blog from './Containers/Blog/Blog';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <div className="App">
         <Blog />
       </div>

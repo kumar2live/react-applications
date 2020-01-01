@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 
 import AxiosInstance from '../../../axios';
+import { Route, Link, NavLink, Switch } from 'react-router-dom';
+import FullPost from '../FullPost/FullPost';
 
 import Post from '../../../Components/Post/Post';
 import './Posts.css';
@@ -36,7 +37,7 @@ class Posts extends Component {
   }
 
   postClickedhandler = (id) => {
-    this.props.history.push('/' + id);
+    this.props.history.push('/posts/' + id);
   }
 
   render() {
@@ -48,7 +49,7 @@ class Posts extends Component {
     if (!this.state.errorPresent) {
       postsData = this.state.posts.map((post) => {
         return (
-          // <Link to={'/' + post.id} key={post.id}> 
+          // <Link to={'/posts/' + post.id} key={post.id}> 
             <Post postData={post} key={post.id} clicked={() => this.postClickedhandler(post.id)}/>
           // </Link>
           );
@@ -56,9 +57,12 @@ class Posts extends Component {
     }
 
     return (
-      <section className="Posts">
-        {postsData}
-      </section>
+      <React.Fragment>
+        <section className="Posts">
+          {postsData}
+        </section>
+        <Route path={this.props.match.url + '/:postID'} exact component={FullPost}/>
+      </React.Fragment>
     );
   }
 
