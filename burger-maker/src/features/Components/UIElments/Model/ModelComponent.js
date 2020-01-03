@@ -9,7 +9,7 @@ class ModelComponent extends Component {
   }
 
   componentDidUpdate() {
-    console.log('ModelComponent componentDidUpdate');
+    // console.log('ModelComponent componentDidUpdate');
   }
 
   render() {

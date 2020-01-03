@@ -1,0 +1,12 @@
+.page-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 2px gray;
+}
+
+.page-header div{
+  padding: 1rem 2rem;
+  margin: 0 .5rem;
+  cursor: pointer;
+}
