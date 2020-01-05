@@ -28,7 +28,6 @@ class CheckoutComponent extends Component {
   }
 
   purchaseContineuedHandler = () => {
-    console.log(this.state);
     this.props.history.replace('/checkout/contact-data')
   }
 
@@ -37,7 +36,7 @@ class CheckoutComponent extends Component {
   }
 
   render () {
-    console.log('CheckoutComponent -- ', this.props);
+    // console.log('CheckoutComponent -- ', this.props);
 
     return (
       <React.Fragment>

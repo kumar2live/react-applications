@@ -23,8 +23,8 @@ const SideDrawerComponent = (props) => {
           <LogoComponent />
         </div>
         <nav>
-          <NavItemComponent link="/" active>Burger Builder</NavItemComponent>
-          <NavItemComponent link="/">Check Out</NavItemComponent>
+          <NavItemComponent link="/">Burger Builder</NavItemComponent>
+          <NavItemComponent link="/orders">Orders</NavItemComponent>
         </nav>
       </div>
     </Aux>

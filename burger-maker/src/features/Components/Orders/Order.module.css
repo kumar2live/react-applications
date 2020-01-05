@@ -6,3 +6,12 @@
   margin: 10px auto;
   box-sizing: border-box; 
 }
+
+.OrderDetails {
+  border: 1px solid salmon;
+  display: flex;
+  box-sizing: border-box;
+  margin: 1rem 0;
+  flex-direction: row;
+  justify-content: space-between;
+}
