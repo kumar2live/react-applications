@@ -5,8 +5,17 @@ import { connect } from 'react-redux';
 import CounterControl from '../../Components/CounterControl/CounterControl';
 import CounterOutput from '../../Components/CounterOutput/CounterOutput';
 
+import * as actionTypes from '../../Store/actions';
+
 class Counter extends Component {
+
   render() {
+    const listStyles = {
+      cursor: 'pointer', padding: '10px', margin: '5px 0',
+      boxSizing: 'border-box',
+      boxShadow: '0px 1px 2px #3f67fa'
+    }
+
     console.log(this.props);
 
     return (
@@ -20,18 +29,20 @@ class Counter extends Component {
 
         <hr />
 
-        <button onClick={this.props.onStoreResult}
+        <button onClick={() => this.props.onStoreResult(this.props.cntr)}
           style={{padding: '1rem', borderRadius: '0.5rem', outline: 'none'}}> Store Results </button>
-        <ul>
-          {this.props.storedResults.map((strRes) => {
-            return (
-              <li 
-              style={{cursor: 'pointer'}} 
-              key={strRes.id} 
-              onClick={this.props.onDeleteResult}> {strRes.value}</li>
-            );
-          })}
-        </ul>
+        
+          <ul style={{listStyle: 'none'}}>
+            {this.props.storedResults.map((strRes) => {
+              return (
+                <li 
+                style={listStyles} 
+                key={strRes.id} 
+                onClick={() => this.props.onDeleteResult(strRes.id)}> {strRes.value}</li>
+              );
+            })}
+          </ul>
+        
       </div>
     );
   }
@@ -39,18 +50,18 @@ class Counter extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    cntr: state.counter, storedResults: state.results,
+    cntr: state.ctr.counter, storedResults: state.res.results,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onIncrementCounter: () => dispatch({type: 'INCREMENT'}),
-    onDecrementCounter: () => dispatch({type: 'DECREMENT'}),
-    onAddFiveCounter: (val) => dispatch({type: 'ADD_FIVE', value: val}),
-    onSubFiveCounter: () => dispatch({type: 'SUB_FIVE', value: 5}),
-    onStoreResult: () => dispatch({type: 'STORE_RESULT'}),
-    onDeleteResult: () => dispatch({type: 'DELETE_RESULT'}),
+    onIncrementCounter: () => dispatch({type: actionTypes.INCREMENT}),
+    onDecrementCounter: () => dispatch({type: actionTypes.DECREMENT}),
+    onAddFiveCounter: (val) => dispatch({type: actionTypes.ADD_FIVE, value: val}),
+    onSubFiveCounter: () => dispatch({type: actionTypes.SUB_FIVE, value: 5}),
+    onStoreResult: (result) => dispatch({type: actionTypes.STORE_RESULT, value: result}),
+    onDeleteResult: (id) => dispatch({type: actionTypes.DELETE_RESULT, value: id}),
   };
 }
 

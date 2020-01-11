@@ -66,3 +66,28 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+To start working on it
+
+install the packages
+npm install redux react-redux -save
+
+in the index.js ->
+import createStore from redux
+import Provider from react-redux
+create a reducer and import it
+create const to create the store for application 'const store = createStore(reducer)'
+in the react dom render use the main component with in <Provider store={store}><App /><Provider>
+
+in the component ->
+import connect from react-redux
+create const to get the state as below
+const mapStateToProps = (state) => {
+  return {dataSet1: state.dataSet1, dataSet2: state.dataSet2}
+}
+create const to dispatch actions
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onUpdate: () => dispatch({type: 'Sample1'});
+  }
+}
