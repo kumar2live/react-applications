@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux';
+import * as ActionTypes from '../../../../store/actions';
 
 import OrderxAxios from '../../../../axios-orders';
 
@@ -116,13 +118,14 @@ class ContactDataComponent extends Component {
     this.setState({ showSpinner: true });
 
     const order = {
-      ingrediants: this.props.ingrediants,
-      price: this.props.totalPrice,
+      ingrediants: this.props.ings,
+      price: this.props.tPrice,
       orderData: this.getFormData(),
     }
 
     OrderxAxios.post('/orders.json', order).then((response) => {
       this.setState({ showSpinner: false });
+      this.props.onIngrediantsReset();
       this.props.history.push('/');
     }).catch((error) => {
       this.setState({ showSpinner: false });
@@ -208,7 +211,7 @@ class ContactDataComponent extends Component {
     return (
       <React.Fragment>
         <div className={CssClasses.ContactData}>
-          <h4>Your Burger is just ${(+this.props.totalPrice).toFixed(2)}</h4>
+          <h4>Your Burger is just ${(+this.props.tPrice).toFixed(2)}</h4>
           <h4>Enter yout Contact Information</h4>
 
           {elem}
@@ -218,4 +221,17 @@ class ContactDataComponent extends Component {
   }
 }
 
-export default ContactDataComponent;
+const mapStateToProps = (state) => {
+  return {
+    ings: state.ingrediants,
+    tPrice: state.totalPrice,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onIngrediantsReset: () => dispatch({type: ActionTypes.RESET_INGREDIANTS}),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactDataComponent);
