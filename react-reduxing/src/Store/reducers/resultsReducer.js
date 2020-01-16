@@ -1,4 +1,4 @@
-import * as actionTypes from '../actions';
+import * as actionTypes from '../actions/actions';
 
 const initialState = {
   results: [],
@@ -25,9 +25,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         results: newResArr,
       }
+    default:
+      return state;
   }
 
-  return state;
+  
 }
 
 export default reducer;
