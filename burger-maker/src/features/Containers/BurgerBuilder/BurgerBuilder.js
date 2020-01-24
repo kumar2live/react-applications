@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import * as ActionTypes from '../../../store/actions';
+import * as actionTypes from '../../../store/actions/index';
 
 import Aux from '../../hoc/Aux';
 import BurgerComponent from '../Burger/BurgerComponent';
@@ -20,13 +20,13 @@ class BurgerBuilderComponent extends Component {
     this.state = {
       purchasing: false,
       showSpinner: false,
-      errorRef: false,
     };
 
     this.purchasingHandler = this.purchasingHandler.bind(this)
   }
 
   componentDidMount() {
+    this.props.onFetchIngrediants()
     // OrderxAxios.get('/ingrediants.json').then((response) => {
     //   this.setState({
     //     ingrediants: response.data,
@@ -57,11 +57,12 @@ class BurgerBuilderComponent extends Component {
   }
 
   purchaseContinueHandler = () => {
+    this.props.onOrderingInit();
     this.props.history.push('/checkout');
   }
 
   render() {
-    console.log('props -- ', this.props);
+    // console.log('props -- ', this.props);
     const disableInfo = {
       ...this.props.ings,
     };
@@ -70,7 +71,7 @@ class BurgerBuilderComponent extends Component {
     }
 
     let orderSummary = null;
-    let burgersElem = this.state.errorRef ? <p style={{paddingTop: '5rem'}}>Application can't be used. Sorry :(</p> :
+    let burgersElem = this.props.errorRef ? <p style={{paddingTop: '5rem'}}>Application can't be used. Sorry :(</p> :
       (<SpinnerComponent />);
 
     if (this.props.ings) {
@@ -115,15 +116,18 @@ class BurgerBuilderComponent extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingrediants,
-    tPrice: state.totalPrice,
+    ings: state.burger.ingrediants,
+    tPrice: state.burger.totalPrice,
+    errorRef: state.burger.error,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onIngrediantAdded: (ingre) => dispatch({type: ActionTypes.ADD_INGREDIANT, ingrediantName: ingre}),
-    onIngrediantRemoved: (ingre) => dispatch({type: ActionTypes.REMOVE_INGREDIANT, ingrediantName: ingre})
+    onIngrediantAdded: (ingre) => dispatch(actionTypes.addIngrediant(ingre)),
+    onIngrediantRemoved: (ingre) => dispatch(actionTypes.removeIngrediant(ingre)),
+    onFetchIngrediants: () => dispatch(actionTypes.fetchIngrediants()),
+    onOrderingInit: () => dispatch(actionTypes.orderInit()),
   }
 }
 

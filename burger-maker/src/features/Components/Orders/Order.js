@@ -58,6 +58,7 @@ const Order = (props) => {
       </div> */}
 
       <p>Price: <strong>SGD {(+props.price).toFixed(2)}</strong></p>
+      <button onClick={props.deleteThisOrder}>Delete this Order</button>
     </div>
   );
 }

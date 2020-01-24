@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import * as ActionTypes from '../../../../store/actions';
+import * as actionTypes from '../../../../store/actions/index';
 
 import OrderxAxios from '../../../../axios-orders';
 
@@ -10,9 +10,10 @@ import ButtonsComponent from '../../../Components/UIElments/Buttons/Buttons';
 import SpinnerComponent from '../../../Components/UIElments/Spinner/Spinner';
 import InputComponent from '../../../Components/UIElments/Input/Input';
 
+import WithErrorHandler from '../../../hoc/WithErrorHandler/WithErrorHandler';
+
 class ContactDataComponent extends Component {
   state = {
-    showSpinner: false,
     formIsValid: false,
     orderForm: {
       name: {
@@ -115,7 +116,7 @@ class ContactDataComponent extends Component {
   orderHandler = (event) => {
     event.preventDefault();
 
-    this.setState({ showSpinner: true });
+    // this.setState({ showSpinner: true });
 
     const order = {
       ingrediants: this.props.ings,
@@ -123,13 +124,15 @@ class ContactDataComponent extends Component {
       orderData: this.getFormData(),
     }
 
-    OrderxAxios.post('/orders.json', order).then((response) => {
-      this.setState({ showSpinner: false });
-      this.props.onIngrediantsReset();
-      this.props.history.push('/');
-    }).catch((error) => {
-      this.setState({ showSpinner: false });
-    });
+    this.props.onOrderSubmit(order);
+
+    // OrderxAxios.post('/orders.json', order).then((response) => {
+    //   this.setState({ showSpinner: false });
+    //   this.props.onIngrediantsReset();
+    //   this.props.history.push('/');
+    // }).catch((error) => {
+    //   this.setState({ showSpinner: false });
+    // });
   }
 
   checkValidity (value, rules) {
@@ -182,7 +185,7 @@ class ContactDataComponent extends Component {
 
     let elem = null;
 
-    if (this.state.showSpinner) {
+    if (this.props.loading) {
       elem = (<SpinnerComponent />);
     } else {
       elem = (
@@ -223,15 +226,17 @@ class ContactDataComponent extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingrediants,
-    tPrice: state.totalPrice,
+    ings: state.burger.ingrediants,
+    tPrice: state.burger.totalPrice,
+    loading: state.order.loading,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onIngrediantsReset: () => dispatch({type: ActionTypes.RESET_INGREDIANTS}),
+    onOrderSubmit: (order) => dispatch(actionTypes.orderBurger(order)),
+    onIngrediantsReset: () => dispatch(actionTypes.resetIngrediant()),
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContactDataComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(WithErrorHandler(ContactDataComponent, OrderxAxios));
