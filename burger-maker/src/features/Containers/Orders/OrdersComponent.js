@@ -17,16 +17,13 @@ class OrdersComponent extends Component {
     }
   }
 
-  componentWillMount() {
-
-  }
-
   deleteOrderHandler(orderID) {
-    this.props.onDeleteOrder(orderID, this.props.token);
+    this.props.onDeleteOrder(orderID, this.props.token, this.props.userId);
   }
 
   render () {
     let elem = null;
+    const noOrders = (<p style={{textAlign: 'center'}}>No orders found.</p>);
 
     if (this.props.loading) {
       elem = (<SpinnerComponent />);
@@ -34,6 +31,9 @@ class OrdersComponent extends Component {
       elem = (
 
         <div className="Orders">
+
+          {this.props.orders && this.props.orders.length === 0 ? noOrders : null}
+
           {this.props.orders.map((order) => {
             return (
               < Order
@@ -68,7 +68,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onFetchOrders: (token, userId) => dispatch(actionTypes.fetchOrders(token, userId)),
-    onDeleteOrder: (orderID, token) => dispatch(actionTypes.deleteOrder(orderID, token)),
+    onDeleteOrder: (orderID, token, userId) => dispatch(actionTypes.deleteOrder(orderID, token, userId)),
   }
 }
 

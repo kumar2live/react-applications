@@ -143,6 +143,7 @@ class AuthComponent extends Component {
 
     return (
       <React.Fragment>
+        <div style={{textAlign: 'center'}}>Prefilled to ease access, feel free to create new account by registering</div>
         <div className={CssClasses.Auth}>
           {authRedirect}
           {errorMessage}
