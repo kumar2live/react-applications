@@ -10,6 +10,8 @@ import ButtonsComponent from '../../../Components/UIElments/Buttons/Buttons';
 import SpinnerComponent from '../../../Components/UIElments/Spinner/Spinner';
 import InputComponent from '../../../Components/UIElments/Input/Input';
 
+import { checkValidity } from '../../../../shared/utility';
+
 import WithErrorHandler from '../../../hoc/WithErrorHandler/WithErrorHandler';
 
 class ContactDataComponent extends Component {
@@ -116,41 +118,14 @@ class ContactDataComponent extends Component {
   orderHandler = (event) => {
     event.preventDefault();
 
-    // this.setState({ showSpinner: true });
-
     const order = {
       ingrediants: this.props.ings,
       price: this.props.tPrice,
       orderData: this.getFormData(),
+      userId: this.props.userId,
     }
 
-    this.props.onOrderSubmit(order);
-
-    // OrderxAxios.post('/orders.json', order).then((response) => {
-    //   this.setState({ showSpinner: false });
-    //   this.props.onIngrediantsReset();
-    //   this.props.history.push('/');
-    // }).catch((error) => {
-    //   this.setState({ showSpinner: false });
-    // });
-  }
-
-  checkValidity (value, rules) {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = (value.trim() !== '') && isValid;
-    }
-
-    if (rules.minLength) {
-      isValid = (value.length >= rules.minLength && isValid);
-    }
-    
-    if (rules.maxLength) {
-      isValid = (value.length <= rules.maxLength && isValid);
-    }
-    
-    return isValid;
+    this.props.onOrderSubmit(order, this.props.token);
   }
 
   propertyChangedHandler = (event, inputIdentifier) => {
@@ -159,7 +134,7 @@ class ContactDataComponent extends Component {
     const updatedOrderElem = {...updatedOrderForm[inputIdentifier]};
     updatedOrderElem.value = value;
     updatedOrderElem.touched = true;
-    updatedOrderElem.valid = this.checkValidity(updatedOrderElem.value , updatedOrderElem.validation)
+    updatedOrderElem.valid = checkValidity(updatedOrderElem.value , updatedOrderElem.validation)
 
     updatedOrderForm[inputIdentifier] = updatedOrderElem;
     
@@ -229,12 +204,14 @@ const mapStateToProps = (state) => {
     ings: state.burger.ingrediants,
     tPrice: state.burger.totalPrice,
     loading: state.order.loading,
+    token: state.auth.token,
+    userId: state.auth.userId,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onOrderSubmit: (order) => dispatch(actionTypes.orderBurger(order)),
+    onOrderSubmit: (order, token) => dispatch(actionTypes.orderBurger(order, token)),
     onIngrediantsReset: () => dispatch(actionTypes.resetIngrediant()),
   }
 }

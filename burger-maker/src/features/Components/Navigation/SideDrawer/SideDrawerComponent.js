@@ -4,7 +4,6 @@ import NavItemComponent from '../Nav/NavItem/NavItemComponent';
 import LogoComponent from '../../Logo/LogoComponent';
 import BackDropComponent from '../../UIElments/BackDrop/BackDropComponent';
 import Aux from '../../../hoc/Aux';
-
 import CssClasses from './SideDrawer.module.css';
 
 const SideDrawerComponent = (props) => {
@@ -18,13 +17,17 @@ const SideDrawerComponent = (props) => {
     <Aux>
       <BackDropComponent show={props.open} backDropClicked={props.closed}/>
 
-      <div className={attachedClasses.join(' ')}>
+      <div className={attachedClasses.join(' ')} onClick={props.closed}>
         <div className={CssClasses.Logo}>
           <LogoComponent />
         </div>
         <nav>
           <NavItemComponent link="/">Burger Builder</NavItemComponent>
-          <NavItemComponent link="/orders">Orders</NavItemComponent>
+          {props.authenticated ? <NavItemComponent link="/orders">Orders</NavItemComponent> : null}
+          
+          {!props.authenticated
+            ? <NavItemComponent link="/auth">Login</NavItemComponent>
+            : <NavItemComponent link="/logout">Logout</NavItemComponent>}
         </nav>
       </div>
     </Aux>

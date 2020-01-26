@@ -22,11 +22,11 @@ export const orderInitiate = () => {
   }
 }
 
-export const orderBurger = (orderData) => {
+export const orderBurger = (orderData, token) => {
   return (dispatch) => {
     dispatch(orderInitiate());
 
-    OrderxAxios.post('/orders.json', orderData).then((response) => {
+    OrderxAxios.post('/orders.json?auth=' + token, orderData).then((response) => {
       dispatch(orderSuccess (response.data.name, orderData));
     }).catch((error) => {
       dispatch(orderFailed(error));
@@ -61,11 +61,14 @@ export const fetchOrdersFailed = (payload) => {
   }
 }
 
-export const fetchOrders = () => {
-  return (dispatch) => {
+export const fetchOrders = (token, userId) => {
+  return (dispatch, _getState) => {
     dispatch(fetchOrdersInit());
+    // one way to get the state inside but not advisable
+    // console.log(_getState().auth.token);
+    const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
 
-    OrderxAxios.get('/orders.json').then((response) => {
+    OrderxAxios.get('/orders.json' + queryParams).then((response) => {
       const fetchedOrders = [];
       for (let key in response.data) {
         fetchedOrders.push({ ...response.data[key], id: key });
@@ -96,13 +99,13 @@ export const deleteOrdersFailed = () => {
   }
 }
 
-export const deleteOrder = (orderID) => {
+export const deleteOrder = (orderID, token) => {
   return (dispatch) => {
     dispatch(deleteOrdersInit());
 
-    OrderxAxios.delete('/orders/' + orderID + '.json').then((response) => {
+    OrderxAxios.delete('/orders/' + orderID + '.json?auth=' + token).then((response) => {
       // console.log('res --- ', response);
-      dispatch(fetchOrders());
+      dispatch(fetchOrders(token));
     }).catch((error) => {
       // console.log('err -- ', error);
       dispatch(deleteOrdersFailed(error));

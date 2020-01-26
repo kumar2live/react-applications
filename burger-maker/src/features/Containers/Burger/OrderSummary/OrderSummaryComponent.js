@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import CssClasses from './OrderSummary.module.css';
 import ButtonsComponent from '../../../Components/UIElments/Buttons/Buttons';
 
 class OrderSummaryComponent extends Component {

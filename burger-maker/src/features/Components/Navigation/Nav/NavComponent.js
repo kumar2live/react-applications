@@ -8,7 +8,10 @@ const NavComponent = (props) => {
   return (
     <ul className={CssClasses.Navigation}>
       <NavItemComponent link="/">Burger Builder</NavItemComponent>
-      <NavItemComponent link="/orders">Orders</NavItemComponent>
+      {props.authenticated ? <NavItemComponent link="/orders">Orders</NavItemComponent> : null}
+      {!props.authenticated
+        ? <NavItemComponent link="/auth">Login</NavItemComponent>
+        : <NavItemComponent link="/logout">Logout</NavItemComponent>}
     </ul>
   );
 }

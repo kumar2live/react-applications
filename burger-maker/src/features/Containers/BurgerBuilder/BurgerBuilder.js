@@ -26,14 +26,7 @@ class BurgerBuilderComponent extends Component {
   }
 
   componentDidMount() {
-    this.props.onFetchIngrediants()
-    // OrderxAxios.get('/ingrediants.json').then((response) => {
-    //   this.setState({
-    //     ingrediants: response.data,
-    //   })
-    // }).catch((error) => {
-    //   this.setState({errorRef: true});
-    // });
+    this.props.onFetchIngrediants();
   }
 
   updateOrderable = (ingrediants) => {
@@ -47,9 +40,12 @@ class BurgerBuilderComponent extends Component {
   }
 
   purchasingHandler () {
-    this.setState({
-      purchasing: true,
-    })
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      this.props.onSetRedirectPath('/checkout');
+      this.props.history.push('/auth');
+    }
   }
 
   purchaseCancelledHandler = () => {
@@ -80,6 +76,7 @@ class BurgerBuilderComponent extends Component {
           <BurgerComponent ingrediants={this.props.ings}/>
 
           <BuildControlsComponent 
+              isAuthenticated={this.props.isAuthenticated}
               orderClicked={this.purchasingHandler}
               orderable={this.updateOrderable(this.props.ings)}
               price={this.props.tPrice}
@@ -119,6 +116,7 @@ const mapStateToProps = (state) => {
     ings: state.burger.ingrediants,
     tPrice: state.burger.totalPrice,
     errorRef: state.burger.error,
+    isAuthenticated: state.auth.token !== null,
   }
 }
 
@@ -128,6 +126,7 @@ const mapDispatchToProps = (dispatch) => {
     onIngrediantRemoved: (ingre) => dispatch(actionTypes.removeIngrediant(ingre)),
     onFetchIngrediants: () => dispatch(actionTypes.fetchIngrediants()),
     onOrderingInit: () => dispatch(actionTypes.orderInit()),
+    onSetRedirectPath: (path) => dispatch(actionTypes.setAuthRedirectPath(path)),
   }
 }
 

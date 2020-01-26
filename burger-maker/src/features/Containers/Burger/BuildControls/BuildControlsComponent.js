@@ -10,6 +10,10 @@ const controls = [
 ];
 
 const BuildControlsComponent = (props) => {
+  let btnName = null;
+
+  btnName = props.isAuthenticated ? 'ORDER NOW' : 'SIGN UP to ORDER'
+
   return (
     <div className={CssClasses.BuildControls}>
       <p>Price <strong>${props.price.toFixed(2)}</strong></p>
@@ -27,7 +31,7 @@ const BuildControlsComponent = (props) => {
       <button
         onClick={props.orderClicked}
         disabled={!props.orderable}
-        className={CssClasses.OrderButton}>ORDER NOW</button>
+        className={CssClasses.OrderButton}>{btnName}</button>
     </div>
   );
 };

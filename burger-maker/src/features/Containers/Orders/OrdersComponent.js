@@ -12,11 +12,13 @@ import './Orders.css';
 
 class OrdersComponent extends Component {
   componentDidMount() {
-    this.props.onFetchOrders();
+    if (this.props.token && this.props.userId) {
+      this.props.onFetchOrders(this.props.token, this.props.userId);
+    }
   }
 
   deleteOrderHandler(orderID) {
-    this.props.onDeleteOrder(orderID);
+    this.props.onDeleteOrder(orderID, this.props.token);
   }
 
   render () {
@@ -54,13 +56,15 @@ const mapStateToProps = (state) => {
   return {
     orders: state.order.orders,
     loading: state.order.loading,
+    token: state.auth.token,
+    userId: state.auth.userId,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchOrders: () => dispatch(actionTypes.fetchOrders()),
-    onDeleteOrder: (orderID) => dispatch(actionTypes.deleteOrder(orderID)),
+    onFetchOrders: (token, userId) => dispatch(actionTypes.fetchOrders(token, userId)),
+    onDeleteOrder: (orderID, token) => dispatch(actionTypes.deleteOrder(orderID, token)),
   }
 }
 

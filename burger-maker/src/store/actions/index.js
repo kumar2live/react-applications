@@ -7,3 +7,7 @@ export {
   fetchOrdersInit, fetchOrders, fetchOrdersFailed, fetchOrdersSuccess,
   deleteOrdersInit, deleteOrder, deleteOrdersFailed, deleteOrdersSuccess,
 } from './orderActions';
+
+export {
+  authStart, auth, authFailed, authSuccess, logout, setAuthRedirectPath, authCheckState,
+} from './authActions';

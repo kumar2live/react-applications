@@ -14,7 +14,7 @@ const ToolBarComponent = (props) => {
         <div className={CssClasses.Logo} style={{display: 'contents'}}><LogoComponent /></div>
 
         <nav className={CssClasses.DesktopOnly}>
-          <NavComponent />
+          <NavComponent authenticated={props.authenticated}/>
         </nav>
       </header>
     </div>
