@@ -23,7 +23,9 @@ const SideDrawerComponent = (props) => {
         </div>
         <nav>
           <NavItemComponent link="/">Burger Builder</NavItemComponent>
-          {props.authenticated ? <NavItemComponent link="/orders">Orders</NavItemComponent> : null}
+          {props.authenticated ? <NavItemComponent link="/orders">
+            Orders {props.ordersCount && props.ordersCount > 0 ? `(${(props.ordersCount)})` : null}
+          </NavItemComponent> : null}
           
           {!props.authenticated
             ? <NavItemComponent link="/auth">Login</NavItemComponent>

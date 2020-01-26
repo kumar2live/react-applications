@@ -44,6 +44,8 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, loading: false,
       }
+    case actionTypes.RESET_APP_STATE:
+      return initialState;
     default:
       return state;
   }

@@ -17,6 +17,10 @@ class OrdersComponent extends Component {
     }
   }
 
+  componentWillMount() {
+
+  }
+
   deleteOrderHandler(orderID) {
     this.props.onDeleteOrder(orderID, this.props.token);
   }

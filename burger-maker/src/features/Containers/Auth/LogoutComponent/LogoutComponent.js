@@ -7,6 +7,7 @@ import * as ActionTypes from '../../../../store/actions/index';
 
 class LogoutComponent extends Component {
   componentDidMount () {
+    this.props.resetAppState();
     this.props.onLogout();
   }
 
@@ -24,6 +25,7 @@ class LogoutComponent extends Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     onLogout: () => dispatch(ActionTypes.logout()),
+    resetAppState: () => dispatch(ActionTypes.resetAppState()),
   }
 }
 

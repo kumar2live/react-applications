@@ -13,7 +13,7 @@ import WithErrorHandlerComponent from '../../hoc/WithErrorHandler/WithErrorHandl
 
 import OrderxAxios from '../../../axios-orders';
 
-class BurgerBuilderComponent extends Component {
+export class BurgerBuilderComponent extends Component {
   constructor() {
     super();
 
@@ -129,7 +129,5 @@ const mapDispatchToProps = (dispatch) => {
     onSetRedirectPath: (path) => dispatch(actionTypes.setAuthRedirectPath(path)),
   }
 }
-
-
 
 export default connect(mapStateToProps, mapDispatchToProps) (WithErrorHandlerComponent(BurgerBuilderComponent, OrderxAxios));

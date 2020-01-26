@@ -29,10 +29,10 @@ class LayoutComponent extends Component {
 
     return (
       <Aux>
-        <SideDrawerComponent open={this.state.showSideDrawer} authenticated={this.props.authenticated} 
+        <SideDrawerComponent open={this.state.showSideDrawer} ordersCount={this.props.ordersCount} authenticated={this.props.authenticated} 
           closed={this.sideDrawerHandler} />
         
-        <ToolBarComponent openMenu={this.openMenuHandler} authenticated={this.props.authenticated}/>
+        <ToolBarComponent openMenu={this.openMenuHandler} ordersCount={this.props.ordersCount} authenticated={this.props.authenticated} />
         <main className={layoutStyles.Content}>
           {this.props.children}
         </main>
@@ -44,6 +44,7 @@ class LayoutComponent extends Component {
 const mapPropsToState = (state) => {
   return {
     authenticated: state.auth.token !== null,
+    ordersCount: state.order.orders.length,
   }
 }
 

@@ -11,3 +11,7 @@ export {
 export {
   authStart, auth, authFailed, authSuccess, logout, setAuthRedirectPath, authCheckState,
 } from './authActions';
+
+export {
+  resetAppState
+} from './appActions';
