@@ -42,9 +42,9 @@ export const auth = (email, password, isSignUp) => {
   return (dispatch) => {
     dispatch(authStart());
 
-    let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCSt0BEL_8L2btQGREe2DAOtDUen245slA';
+    let url = 'replacewithurlandkey';
 
-    url = isSignUp ? url : 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCSt0BEL_8L2btQGREe2DAOtDUen245slA'
+    url = isSignUp ? url : 'replacewithurlandkey'
 
     const authData = {
       email: email, password: password, returnSecureToken: true,
