@@ -14,13 +14,7 @@ const IngredientForm = React.memo(props => {
   const submitHandler = event => {
     event.preventDefault();
     props.onAddIngredient({title: titleRef, amount: amoutRef});
-    // ...
   };
-
-  // onChangeHandler = (e, key) => {
-  //   const {value} = e.target;
-  //   setStateRef({...inputStateRef, [key]: value});
-  // }
 
   return (
 

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer, useMemo } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
 import IngredientList from './IngredientList';
 import ErrorModal from '../UI/ErrorModal';
+import useCustomHttp from '../../custom-hooks/httpHook';
 
 const ingredientsReducer = (currentIngredients, action) => {
   switch(action.type) {
@@ -18,122 +19,59 @@ const ingredientsReducer = (currentIngredients, action) => {
   }
 }
 
-const fetchReducer = (currentFetchState, action) => {
-  switch(action.type) {
-    case 'SEND':
-      return {isLoading: true, errorState: null };
-    case 'RESPONSE':
-      return {...currentFetchState, isLoading: false};
-    case 'ERROR':
-      return {isLoading: false, errorState: action.errorData };
-    case 'CLEAR':
-      return {...currentFetchState, errorState: null};
-    default:
-      throw new Error('Should not come till here!');
-  }
-}
-
 const Ingredients = () => {
   const [ingredientsRef, ingredientDispatch] = useReducer(ingredientsReducer, []);
-  // const [ingredientsRef, setIngredientsRef] = useState([]);
-  
-  const [fetchState, fetchDispatcher] = useReducer(fetchReducer, {isLoading: false, errorState: null});
-  // const [isLoading, setisLoading] = useState(false);
-  // const [errorState, seterrorState] = useState('')
+  const {isLoading, data, errorState, sendRequest, reqExtra, reqIdentifier, clearState } = useCustomHttp();
 
   useEffect(() => {
-    console.log('Rendering Ingredients');
-  }, [ingredientsRef]);
+    if (!isLoading && !errorState && reqIdentifier === 'REMOVE_INGREDIENT') {
+      ingredientDispatch({type: 'DELETE', id: reqExtra });
+    } else if (!isLoading && !errorState && reqIdentifier === 'ADD_INGREDIENT') {
+      ingredientDispatch({type: 'ADD', ingredient: {id: data.name, ...reqExtra} });
+    }
+  }, [data, reqExtra, reqIdentifier, isLoading, errorState]);
 
-  // useEffect(() => {  
-  //   fetch('https://mandesmuthukumar.firebaseio.com/ingredients.json')
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       const loadedIngredients = [];
-  //       console.log('data -- ', data);
-  //       for (const key in data) {
-  //         loadedIngredients.push({id: key, title: data[key].title, amount: data[key].amount })
-  //       }
+  const addIngredientHandler = useCallback((ing) => {
+    sendRequest(
+      'https://mandesmuthukumar.firebaseio.com/ingredients.json',
+      'POST',
+      JSON.stringify(ing),
+      ing,
+      'ADD_INGREDIENT'
+    );
+  }, [sendRequest]);
 
-  //       setIngredientsRef(loadedIngredients);
-  //     });
-  // }, []);
-
-  const addIngredientHandler = (ing) => {
-    // setisLoading(true);
-    fetchDispatcher({type: 'SEND'});
-    fetch('https://mandesmuthukumar.firebaseio.com/ingredients.json',
-      {
-        method: 'POST',
-        body: JSON.stringify(ing),
-        headers: { 'Content-Type': 'application/json'}
-      }).then((response) => response.json()).then((data) => {
-        // setisLoading(false);
-        fetchDispatcher({type: 'RESPONSE'});
-
-        // setIngredientsRef((prevState) => {
-        //   return [...prevState, {
-        //     id: data.name,
-        //     ...ing,
-        //   }];
-        // });
-
-        ingredientDispatch({type: 'ADD', ingredient: {id: data.name, ...ing} });
-      })
-  }
-
-  const removeIngredientHandler = (ingID) => {
-    // setisLoading(true);
-    fetchDispatcher({type: 'SEND'});
-    fetch(
+  const removeIngredientHandler = useCallback((ingID) => {
+    sendRequest(
       'https://mandesmuthukumar.firebaseio.com/ingredients/' + ingID +'.json',
-      {
-        method: 'DELETE'
-      })
-      .then((response) => response.json())
-      .then((_data) => {
-        // setisLoading(false);
-        fetchDispatcher({type: 'RESPONSE'});
-
-        // setIngredientsRef((prevState) => {
-        //   return prevState.filter((ingRef) => ingRef.id !== ingID)
-        // })
-
-        ingredientDispatch({type: 'DELETE', id: ingID });
-      })
-      .catch((error) => {
-        fetchDispatcher({type: 'ERROR', errorData: 'Something went wrong'});
-        // setisLoading(false);
-        // seterrorState('Something went wrong');
-      });
-  }
+      'DELETE',
+      null,
+      ingID,
+      'REMOVE_INGREDIENT'
+    );
+  }, [sendRequest]);
 
   const onSearchIngredientsHandler = useCallback(
     (filterIngredient) => {
-      // setIngredientsRef(filterIngredient);
       ingredientDispatch({type: 'SET', ingredients: filterIngredient });
     },[]);
 
-  // const onSearchIngredientsHandler = (filterIngredient) => {
-  //   console.log(filterIngredient);
-  //   setIngredientsRef(filterIngredient);
-  // }
-
-  const clearError = () => {
-    fetchDispatcher({type: 'CLEAR'});
-    // seterrorState('');
-  }
+  const memorizeIngredientList = useMemo(() => {
+    return (
+      <IngredientList ingredients={ingredientsRef} onRemoveItem={removeIngredientHandler}/>
+    );
+  }, [ingredientsRef, removeIngredientHandler])
 
   return (
     <div className="App">
-      {fetchState.errorState && <ErrorModal onClose={clearError}>{fetchState.errorState}</ErrorModal>}
+      {errorState && <ErrorModal onClose={clearState}>{errorState}</ErrorModal>}
 
-      <IngredientForm onAddIngredient={addIngredientHandler} isLoading={fetchState.isLoading}/>
+      <IngredientForm onAddIngredient={addIngredientHandler} isLoading={isLoading}/>
 
       <section>
         <Search onSearchIngredients={onSearchIngredientsHandler}/>
 
-        <IngredientList ingredients={ingredientsRef} onRemoveItem={removeIngredientHandler}/>
+        {memorizeIngredientList}
       </section>
     </div>
   );
