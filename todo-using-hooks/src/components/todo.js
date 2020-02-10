@@ -1,5 +1,8 @@
-import React, {useState, useEffect, useReducer, useRef } from 'react';
+import React, {useState, useEffect, useReducer, useMemo } from 'react';
 import './todo.css'
+
+import ListComponent from './list';
+import { useFormInput } from '../hooks/formsHook';
 
 import axios from 'axios';
 
@@ -17,39 +20,20 @@ const todoListReducer = (state, action) => {
 }
 
 const TodoComponent = (props) => {
-  // const [Todo, setTodo] = useState('');
-  // const [SubmittedTodo, setSubmittedTodo] = useState(null);
-  // const [TodoList, setTodoList] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [todoState, todoDispatcher] = useReducer(todoListReducer, []);
-
-  const todoInputRef = useRef();
-
-  // const [TodoState, setTodoState] = useState({Todo: '', TodoList: []});
-
-  // const setTodoValue = (event) => {
-  //   const todoName = event.target.value;
-  //   setTodo(todoName)
-  //   // setTodoState({TodoList: TodoState.TodoList, Todo: event.target.value})
-  // }
+  const toDoInput = useFormInput();
 
   const addTodoHandler = () => {
-    // setTodoState({
-    //   TodoList: TodoState.TodoList.concat(TodoState.Todo),
-    //   Todo: TodoState.Todo,
-    // })
     setLoading(true);
-    const Todo = todoInputRef.current.value;
+    const Todo = toDoInput.value;
 
     axios.post('https://mandesmuthukumar.firebaseio.com/todos.json', {name: Todo})
       .then((response) => {
         const newTodo = {name: Todo, id: response.data.name}
-        // setTodoList(TodoList.concat(newTodo));
         todoDispatcher({type: 'ADD', payload: newTodo});
-        // setSubmittedTodo(newTodo);
         setLoading(false);
-        todoInputRef.current.value = null;
+        // todoInputRef.current.value = null;
       })
       .catch((error) => {
         setLoading(false);
@@ -81,7 +65,6 @@ const TodoComponent = (props) => {
           todosArr.push({id: key, name: todos[key].name});
         }
         todoDispatcher({type: 'SET', payload: todosArr});
-        // setTodoList(todosArr);
         setLoading(false);
       })
       .catch((error) => {
@@ -93,37 +76,21 @@ const TodoComponent = (props) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (SubmittedTodo) {
-  //     // setTodoList(TodoList.concat(SubmittedTodo));
-  //     todoDispatcher({type: 'ADD', payload: SubmittedTodo});
-  //   }
-  // }, [SubmittedTodo]);
-
-
-  // const mousemoveHandler = (event) => {
-  //   console.log(event.clientX, event.clientY);
-  // }
-
-  // useEffect(() => {
-  //   document.addEventListener('mousemove', mousemoveHandler);
-
-  //   return () => {
-  //     document.removeEventListener('mousemove', mousemoveHandler);
-  //   };
-  // }, []);
-
   return (
 
     <React.Fragment>
       <div className="TodoList">
         <div className="Heading"> Todo List </div>
 
-        {/* <input className="inputStyles" type="text" placeholder="Please enter todo"
-          value={Todo}
-          onChange={setTodoValue} /> */}
-
-        <input className="inputStyles" type="text" placeholder="Please enter todo" ref={todoInputRef} />
+        <input
+          className="inputStyles"
+          type="text"
+          placeholder="Please enter todo"
+          onChange={toDoInput.onChange}
+          value={toDoInput.value}
+          style={{backgroundColor: toDoInput.validity ? 'transparent': '#292727cc'}}
+          />
+        {/* <input className="inputStyles" type="text" placeholder="Please enter todo" ref={todoInputRef} /> */}
 
         <button type="button" className="buttonStyles"
           onClick={addTodoHandler} >Add</button>
@@ -131,18 +98,7 @@ const TodoComponent = (props) => {
         {loading && 'Please wait..!'}
 
         <ul>
-          {todoState.map((todo) => {
-            return (
-              <li key={todo.id}>
-                <div className="todo-item">
-                  <div>{todo.name} </div>
-                  <div>
-                    <button type="button" onClick={todoRemoveHandler.bind(this, todo)}>Delete</button>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
+          { useMemo(() => <ListComponent items={todoState} onClick={todoRemoveHandler}/>, [todoState])}
         </ul>
       </div>
     </React.Fragment>

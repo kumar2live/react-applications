@@ -1,0 +1,12 @@
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo-item button {
+  height: 1.5rem;
+  cursor: pointer;
+  outline: none;
+}
