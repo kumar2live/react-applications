@@ -1,0 +1,17 @@
+.Order {
+  width: 100%;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 3px #ccc;
+  padding: 10px;
+  margin: 10px auto;
+  box-sizing: border-box; 
+}
+
+.OrderDetails {
+  border: 1px solid salmon;
+  display: flex;
+  box-sizing: border-box;
+  margin: 1rem 0;
+  flex-direction: row;
+  justify-content: space-between;
+}
