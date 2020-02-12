@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import OrderxAxios from '../../../axios-orders';
 
 import { connect } from 'react-redux';
@@ -10,50 +10,48 @@ import WithErrorHandler from '../../hoc/WithErrorHandler/WithErrorHandler';
 import Order from '../../Components/Orders/Order';
 import './Orders.css';
 
-class OrdersComponent extends Component {
-  componentDidMount() {
-    if (this.props.token && this.props.userId) {
-      this.props.onFetchOrders(this.props.token, this.props.userId);
+const OrdersComponent = (props) => {
+  useEffect(() => {
+    if (props.token && props.userId) {
+      props.onFetchOrders(props.token, props.userId);
     }
+  }, []);
+
+  const deleteOrderHandler = (orderID) => {
+    props.onDeleteOrder(orderID, props.token, props.userId);
   }
 
-  deleteOrderHandler(orderID) {
-    this.props.onDeleteOrder(orderID, this.props.token, this.props.userId);
-  }
+  let elem = null;
+  const noOrders = (<p style={{textAlign: 'center'}}>No orders found.</p>);
 
-  render () {
-    let elem = null;
-    const noOrders = (<p style={{textAlign: 'center'}}>No orders found.</p>);
+  if (props.loading) {
+    elem = (<SpinnerComponent />);
+  } else {
+    elem = (
 
-    if (this.props.loading) {
-      elem = (<SpinnerComponent />);
-    } else {
-      elem = (
+      <div className="Orders">
 
-        <div className="Orders">
+        {props.orders && props.orders.length === 0 ? noOrders : null}
 
-          {this.props.orders && this.props.orders.length === 0 ? noOrders : null}
-
-          {this.props.orders.map((order) => {
-            return (
-              < Order
-                ingrediants={order.ingrediants}
-                price={order.price}
-                key={order.id}
-                deleteThisOrder={() => this.deleteOrderHandler(order.id)}
-                orderData={order.orderData}/> 
-            );
-          })}
-        </div>
-      );
-    }
-
-    return (
-      <div >
-        {elem}
+        {props.orders.map((order) => {
+          return (
+            < Order
+              ingrediants={order.ingrediants}
+              price={order.price}
+              key={order.id}
+              deleteThisOrder={() => deleteOrderHandler(order.id)}
+              orderData={order.orderData}/> 
+          );
+        })}
       </div>
     );
   }
+
+  return (
+    <div >
+      {elem}
+    </div>
+  );
 }
 
 const mapStateToProps = (state) => {

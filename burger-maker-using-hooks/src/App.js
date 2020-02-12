@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense, useEffect } from 'react';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from './store/actions/index';
@@ -14,66 +14,58 @@ import LogoutComponent from './features/Containers/Auth/LogoutComponent/LogoutCo
 
 import asyncComponent from './features/hoc/AsyncComponent/AsyncComponent';
 
-const asyncAuth = asyncComponent(() => {
+const AsyncAuth = React.lazy(() => {
   return import('./features/Containers/Auth/AuthComponent');
 })
 
-const asyncCheckout = asyncComponent(() => {
+const AsyncCheckout = React.lazy(() => {
   return import('./features/Containers/CheckOut/CheckoutComponent');
 })
 
-const asyncOrders = asyncComponent(() => {
+const AsyncOrders = React.lazy(() => {
   return import('./features/Containers/Orders/OrdersComponent');
 })
 
-class App extends Component {
-  state = {
-    showComp: true,
-  }
+const App = (props) => {
 
-  componentDidMount() {
-    this.props.onAutoSignIn();
-  }
+  useEffect(() => {
+    props.onAutoSignIn();
+  }, [props]);
 
-  render() {
-    let routes = null;
+  let routes = null;
 
-    if (this.props.isAuthenticated) {
-      routes = (
-        <React.Fragment>
-          <Switch>
-            <Route path="/checkout" component={asyncCheckout} />
-            <Route path="/orders" component={asyncOrders} />
-            <Route path="/auth" component={asyncAuth} />
-            <Route path="/logout" component={LogoutComponent} />
-            <Route path="/" component={BurgerBuilderComponent} />
-            <Redirect to="/" />
-          </Switch>
-        </React.Fragment>
-      )
-    } else {
-      routes = (
+  if (props.isAuthenticated) {
+    routes = (
       <React.Fragment>
         <Switch>
-          <Route path="/auth" component={asyncAuth} />
+          <Route path="/checkout" render={(props) => <AsyncCheckout {...props}/>} />
+          <Route path="/orders" render={(props) => <AsyncOrders {...props} />} />
+          <Route path="/auth" render={(props) => <AsyncAuth {...props} />} />
+          <Route path="/logout" component={LogoutComponent} />
           <Route path="/" component={BurgerBuilderComponent} />
           <Redirect to="/" />
         </Switch>
-      </React.Fragment>);
-    }
-
-    return (
-      <div className="App">
-        <LayoutComponent>
-          <Switch>
-            {routes}
-          </Switch>
-            {/* {this.state.showComp ? <BurgerBuilderComponent /> : null} */}
-        </LayoutComponent>
-      </div>
-    );
+      </React.Fragment>
+    )
+  } else {
+    routes = (
+    <React.Fragment>
+      <Switch>
+        <Route path="/auth" render={(props) => <AsyncAuth {...props} />} />
+        <Route path="/" component={BurgerBuilderComponent} />
+        <Redirect to="/" />
+      </Switch>
+    </React.Fragment>);
   }
 
+  return (
+    <div className="App">
+      <LayoutComponent>
+        <Suspense fallback={<p>Loading...!</p>}>{routes}</Suspense>
+          {/* {this.state.showComp ? <BurgerBuilderComponent /> : null} */}
+      </LayoutComponent>
+    </div>
+  );
 }
 
 const mapStateToProps = (state) => {

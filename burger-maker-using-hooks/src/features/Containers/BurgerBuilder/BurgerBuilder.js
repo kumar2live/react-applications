@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { connect } from 'react-redux';
 import * as actionTypes from '../../../store/actions/index';
@@ -13,23 +13,15 @@ import WithErrorHandlerComponent from '../../hoc/WithErrorHandler/WithErrorHandl
 
 import OrderxAxios from '../../../axios-orders';
 
-export class BurgerBuilderComponent extends Component {
-  constructor() {
-    super();
+const BurgerBuilderComponent = (props) => {
+  const [purchasing, setpurchasing] = useState(false);
+  const [showSpinner, setshowSpinner] = useState(false);
 
-    this.state = {
-      purchasing: false,
-      showSpinner: false,
-    };
+  useEffect(() => {
+    props.onFetchIngrediants();
+  }, []);
 
-    this.purchasingHandler = this.purchasingHandler.bind(this)
-  }
-
-  componentDidMount() {
-    this.props.onFetchIngrediants();
-  }
-
-  updateOrderable = (ingrediants) => {
+  const updateOrderable = (ingrediants) => {
     const sum = Object.keys(ingrediants).map((ingrediant) => {
       return ingrediants[ingrediant];
     }).reduce((acc, nxtValue) => {
@@ -39,76 +31,73 @@ export class BurgerBuilderComponent extends Component {
     return sum > 0;
   }
 
-  purchasingHandler () {
-    if (this.props.isAuthenticated) {
-      this.setState({ purchasing: true });
+  const purchasingHandler = () => {
+    if (props.isAuthenticated) {
+      setpurchasing(true);
     } else {
-      this.props.onSetRedirectPath('/checkout');
-      this.props.history.push('/auth');
+      props.onSetRedirectPath('/checkout');
+      props.history.push('/auth');
     }
   }
 
-  purchaseCancelledHandler = () => {
-    this.setState({ purchasing: false })
+  const purchaseCancelledHandler = () => {
+    setpurchasing(false);
   }
 
-  purchaseContinueHandler = () => {
-    this.props.onOrderingInit();
-    this.props.history.push('/checkout');
+  const purchaseContinueHandler = () => {
+    props.onOrderingInit();
+    props.history.push('/checkout');
   }
 
-  render() {
-    // console.log('props -- ', this.props);
-    const disableInfo = {
-      ...this.props.ings,
-    };
-    for (let key in disableInfo) {
-      disableInfo[key] = disableInfo[key] <= 0;
-    }
+  const disableInfo = {
+    ...props.ings,
+  };
+  for (let key in disableInfo) {
+    disableInfo[key] = disableInfo[key] <= 0;
+  }
 
-    let orderSummary = null;
-    let burgersElem = this.props.errorRef ? <p style={{paddingTop: '5rem'}}>Application can't be used. Sorry :(</p> :
-      (<SpinnerComponent />);
+  let orderSummary = null;
+  let burgersElem = props.errorRef ? <p style={{paddingTop: '5rem'}}>Application can't be used. Sorry :(</p> :
+    (<SpinnerComponent />);
 
-    if (this.props.ings) {
-      burgersElem = (
-        <Aux>
-          <BurgerComponent ingrediants={this.props.ings}/>
-
-          <BuildControlsComponent 
-              isAuthenticated={this.props.isAuthenticated}
-              orderClicked={this.purchasingHandler}
-              orderable={this.updateOrderable(this.props.ings)}
-              price={this.props.tPrice}
-              disabled={disableInfo}
-              ingrediantRemoved={this.props.onIngrediantRemoved}
-              ingrediantAdded={this.props.onIngrediantAdded}/>
-        </Aux>
-      );
-
-      orderSummary = (
-        <OrderSummaryComponent
-              price={this.props.tPrice}
-              ingrediants={this.props.ings}
-              purchaseCancelled={this.purchaseCancelledHandler}
-              purchaseContineued={this.purchaseContinueHandler}/>
-      );
-
-      if (this.state.showSpinner) {
-        orderSummary = (<SpinnerComponent />);
-      }
-    }
-
-    return (
+  if (props.ings) {
+    burgersElem = (
       <Aux>
-        <ModelComponent showModal={this.state.purchasing} modalClosed={this.purchaseCancelledHandler}>
-          {orderSummary}
-        </ModelComponent>
-        
-        {burgersElem}
+        <BurgerComponent ingrediants={props.ings}/>
+
+        <BuildControlsComponent 
+            isAuthenticated={props.isAuthenticated}
+            orderClicked={purchasingHandler}
+            orderable={updateOrderable(props.ings)}
+            price={props.tPrice}
+            disabled={disableInfo}
+            ingrediantRemoved={props.onIngrediantRemoved}
+            ingrediantAdded={props.onIngrediantAdded}/>
       </Aux>
     );
+
+    orderSummary = (
+      <OrderSummaryComponent
+            price={props.tPrice}
+            ingrediants={props.ings}
+            purchaseCancelled={purchaseCancelledHandler}
+            purchaseContineued={purchaseContinueHandler}/>
+    );
+
+    if (showSpinner) {
+      orderSummary = (<SpinnerComponent />);
+    }
   }
+
+  return (
+    <Aux>
+      <ModelComponent showModal={purchasing} modalClosed={purchaseCancelledHandler}>
+        {orderSummary}
+      </ModelComponent>
+      
+      {burgersElem}
+    </Aux>
+  );
 }
 
 const mapStateToProps = (state) => {

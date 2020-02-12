@@ -1,25 +1,24 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
 import * as ActionTypes from '../../../../store/actions/index';
 
-class LogoutComponent extends Component {
-  componentDidMount () {
-    this.props.resetAppState();
-    this.props.onLogout();
-  }
+const LogoutComponent = (props) => {
+  useEffect(() => {
+    props.resetAppState();
+    props.onLogout();
+  }, []);
 
-  render () {
-    return (
-      <React.Fragment>
-        <p> Loggin out ...! :( </p>
+  return (
+    <React.Fragment>
+      <p> Loggin out ...! :( </p>
 
-        <Redirect to="/" />
-      </React.Fragment>
-    );
-  }
+      <Redirect to="/" />
+    </React.Fragment>
+  );
+
 }
 
 const mapDispatchToProps = (dispatch) => {

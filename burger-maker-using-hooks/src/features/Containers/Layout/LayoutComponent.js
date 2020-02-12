@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
 import { connect } from 'react-redux';
 
@@ -8,37 +8,28 @@ import SideDrawerComponent from '../../Components/Navigation/SideDrawer/SideDraw
 
 import layoutStyles from './Layout.module.css';
 
-class LayoutComponent extends Component {
-  state = {
-    showSideDrawer: false,
-  }
+const LayoutComponent = (props) => {
+  const [showSideDrawer, setshowSideDrawer] = useState(false);
   
-  sideDrawerHandler = () => {
-    this.setState({
-      showSideDrawer: false,
-    })
+  const sideDrawerHandler = () => {
+    setshowSideDrawer(false);
   }
 
-  openMenuHandler = () => {
-    this.setState((prevState) => {
-      return {showSideDrawer: !prevState.showSideDrawer}
-    });
+  const openMenuHandler = () => {
+    setshowSideDrawer(!showSideDrawer);
   }
 
-  render () {
-
-    return (
-      <Aux>
-        <SideDrawerComponent open={this.state.showSideDrawer} ordersCount={this.props.ordersCount} authenticated={this.props.authenticated} 
-          closed={this.sideDrawerHandler} />
-        
-        <ToolBarComponent openMenu={this.openMenuHandler} ordersCount={this.props.ordersCount} authenticated={this.props.authenticated} />
-        <main className={layoutStyles.Content}>
-          {this.props.children}
-        </main>
-      </Aux>
-    );
-  }
+  return (
+    <Aux>
+      <SideDrawerComponent open={showSideDrawer} ordersCount={props.ordersCount} authenticated={props.authenticated} 
+        closed={sideDrawerHandler} />
+      
+      <ToolBarComponent openMenu={openMenuHandler} ordersCount={props.ordersCount} authenticated={props.authenticated} />
+      <main className={layoutStyles.Content}>
+        {props.children}
+      </main>
+    </Aux>
+  );
 }
 
 const mapPropsToState = (state) => {

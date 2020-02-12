@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { connect } from 'react-redux';
@@ -12,9 +12,8 @@ import { checkValidity } from '../../../shared/utility';
 
 import CssClasses from './AuthComponent.module.css';
 
-class AuthComponent extends Component {
-  state = {
-    controls: {
+const AuthComponent = (props) => {
+  const [controls, setcontrols] = useState({
       email: {
         name: 'Email: ',
         elemType: 'input',
@@ -43,46 +42,43 @@ class AuthComponent extends Component {
         valid: false,
         touched: false,
       },
-    },
-    isSignUp: false,
-  }
+  })
+  const [isSignUp, setisSignUp] = useState(false);
 
-  componentDidMount() {
-    if (!this.props.isBurgerBuilding && this.props.authRedirectPath !== '/') {
-      this.props.onSetAuthRedirectPath();
+  useEffect(() => {
+    if (!props.isBurgerBuilding && props.authRedirectPath !== '/') {
+      props.onSetAuthRedirectPath();
     }
+  }, []);
+
+  const toggleIsSignUp = () => {
+    setisSignUp(!isSignUp);
   }
 
-  toggleIsSignUp = () => {
-    this.setState(prevState => {
-      return {isSignUp: !prevState.isSignUp}
-    })
-  }
-
-  submitHandler = (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
 
-    this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value, this.state.isSignUp);
+    props.onAuth(controls.email.value, controls.password.value, isSignUp);
   }
 
-  formChangedHanleder = (event, input) => {
+  const formChangedHanleder = (event, input) => {
     const {value} = event.target;
     const updatedControls = {
-      ...this.state.controls,
+      ...controls,
       [input]: {
-        ...this.state.controls[input],
+        ...controls[input],
         value: value,
-        valid: checkValidity(value, this.state.controls[input].validation),
+        valid: checkValidity(value, controls[input].validation),
         touced: true,
       }
     }
 
-    this.setState({controls: updatedControls});
+    setcontrols(updatedControls);
   }
 
-  propertyChangedHandler = (event, inputIdentifier) => {
+  const propertyChangedHandler = (event, inputIdentifier) => {
     const {value} = event.target;
-    const updatedOrderForm = {...this.state.controls};
+    const updatedOrderForm = {...controls};
     const updatedOrderElem = {...updatedOrderForm[inputIdentifier]};
     updatedOrderElem.value = value;
     updatedOrderElem.touched = true;
@@ -95,69 +91,65 @@ class AuthComponent extends Component {
       formValidity = (updatedOrderForm[elems].valid && formValidity);
     }
 
-    this.setState({
-      controls: updatedOrderForm, formIsValid: formValidity,
-    })
+    setcontrols(updatedOrderForm);
   }
 
-  render () {
-    const formElemArr = [];
-    for(let key in this.state.controls) {
-      formElemArr.push({
-        id: key,
-        config: this.state.controls[key],
-      });
-    }
+  const formElemArr = [];
+  for(let key in controls) {
+    formElemArr.push({
+      id: key,
+      config: controls[key],
+    });
+  }
 
-    let authRedirect = null;
-    if (this.props.isAuthenticated) {
-      authRedirect = <Redirect to={this.props.authRedirectPath} />
-    }
+  let authRedirect = null;
+  if (props.isAuthenticated) {
+    authRedirect = <Redirect to={props.authRedirectPath} />
+  }
 
-    let form = formElemArr.map((formElem) => {
-      return (
-        <InputComponent
-          invalid={!formElem.config.valid}
-          shouldValidate={formElem.config.validation}
-          touched={formElem.config.touched}
-          key={formElem.id}
-          label={formElem.config.name}
-          elemType={formElem.config.elemType}
-          elemConfig={formElem.config.elemConfig}
-          value={formElem.config.value}
-          propertyChanged={(e) => {this.propertyChangedHandler(e, formElem.id)}}
-        />
-      );
-    })
-
-    if (this.props.loading) {
-      form = (<SpinnerComponent />);
-    }
-
-    let errorMessage = null;
-    if (this.props.error) {
-      errorMessage = (
-      <p style={{color: '#ff1407'}}>{this.props.error.message}</p>
-      );
-    }
-
+  let form = formElemArr.map((formElem) => {
     return (
-      <React.Fragment>
-        <div style={{textAlign: 'center'}}>Prefilled to ease access, feel free to create new account by registering</div>
-        <div className={CssClasses.Auth}>
-          {authRedirect}
-          {errorMessage}
-          <form onSubmit={this.submitHandler}>
-            {form}
-            <ButtonsComponent btnType='Success'> {this.state.isSignUp ? 'Register' : 'Login'} </ButtonsComponent>
-            {/* <ButtonsComponent btnType='Success' btnDisabled={!this.state.formIsValid} >Go !</ButtonsComponent> */}
-          </form>
-          <ButtonsComponent btnType='Danger' btnClicked={this.toggleIsSignUp}>
-            Switch To {this.state.isSignUp ? 'Sign In' : 'Sign Up'} !</ButtonsComponent>
-        </div>
-      </React.Fragment>
+      <InputComponent
+        invalid={!formElem.config.valid}
+        shouldValidate={formElem.config.validation}
+        touched={formElem.config.touched}
+        key={formElem.id}
+        label={formElem.config.name}
+        elemType={formElem.config.elemType}
+        elemConfig={formElem.config.elemConfig}
+        value={formElem.config.value}
+        propertyChanged={(e) => {propertyChangedHandler(e, formElem.id)}}
+      />
+    );
+  })
+
+  if (props.loading) {
+    form = (<SpinnerComponent />);
+  }
+
+  let errorMessage = null;
+  if (props.error) {
+    errorMessage = (
+    <p style={{color: '#ff1407'}}>{props.error.message}</p>
     );
   }
+
+  return (
+    <React.Fragment>
+      <div style={{textAlign: 'center'}}>Prefilled to ease access, feel free to create new account by registering</div>
+      <div className={CssClasses.Auth}>
+        {authRedirect}
+        {errorMessage}
+        <form onSubmit={submitHandler}>
+          {form}
+          <ButtonsComponent btnType='Success'> {isSignUp ? 'Register' : 'Login'} </ButtonsComponent>
+        </form>
+        <ButtonsComponent btnType='Danger' btnClicked={toggleIsSignUp}>
+          Switch To {isSignUp ? 'Sign In' : 'Sign Up'} !</ButtonsComponent>
+      </div>
+    </React.Fragment>
+  );
+  
 }
 
 const mapStateToProps = (state) => {
