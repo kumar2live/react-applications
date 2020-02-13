@@ -42,9 +42,9 @@ export const auth = (email, password, isSignUp) => {
   return (dispatch) => {
     dispatch(authStart());
 
-    let url = 'replacewithsignup';
+    let url = 'signUp';
 
-    url = isSignUp ? url : 'replacewithsignin';
+    url = isSignUp ? url : 'signInWithPassword';
 
     const authData = {
       email: email, password: password, returnSecureToken: true,

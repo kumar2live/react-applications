@@ -1,4 +1,4 @@
-import React, { Component, Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { connect } from 'react-redux';
 import * as ActionTypes from './store/actions/index';
@@ -11,8 +11,6 @@ import BurgerBuilderComponent from './features/Containers/BurgerBuilder/BurgerBu
 // import OrdersComponent from './features/Containers/Orders/OrdersComponent';
 // import AuthComponent from './features/Containers/Auth/AuthComponent';
 import LogoutComponent from './features/Containers/Auth/LogoutComponent/LogoutComponent';
-
-import asyncComponent from './features/hoc/AsyncComponent/AsyncComponent';
 
 const AsyncAuth = React.lazy(() => {
   return import('./features/Containers/Auth/AuthComponent');
@@ -27,10 +25,11 @@ const AsyncOrders = React.lazy(() => {
 })
 
 const App = (props) => {
+  const { onAutoSignIn } = props;
 
   useEffect(() => {
-    props.onAutoSignIn();
-  }, [props]);
+    onAutoSignIn();
+  }, [onAutoSignIn]);
 
   let routes = null;
 

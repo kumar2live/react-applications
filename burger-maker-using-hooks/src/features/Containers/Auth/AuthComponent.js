@@ -45,11 +45,12 @@ const AuthComponent = (props) => {
   })
   const [isSignUp, setisSignUp] = useState(false);
 
+  const { isBurgerBuilding, authRedirectPath, onSetAuthRedirectPath } = props;
   useEffect(() => {
-    if (!props.isBurgerBuilding && props.authRedirectPath !== '/') {
-      props.onSetAuthRedirectPath();
+    if (!isBurgerBuilding && authRedirectPath !== '/') {
+      onSetAuthRedirectPath();
     }
-  }, []);
+  }, [isBurgerBuilding, authRedirectPath, onSetAuthRedirectPath]);
 
   const toggleIsSignUp = () => {
     setisSignUp(!isSignUp);

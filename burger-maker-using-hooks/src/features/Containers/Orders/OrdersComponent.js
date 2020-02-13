@@ -11,11 +11,12 @@ import Order from '../../Components/Orders/Order';
 import './Orders.css';
 
 const OrdersComponent = (props) => {
+  const { onFetchOrders, token, userId } = props;
   useEffect(() => {
-    if (props.token && props.userId) {
-      props.onFetchOrders(props.token, props.userId);
+    if (token && userId) {
+      onFetchOrders(token, userId);
     }
-  }, []);
+  }, [onFetchOrders, token, userId]);
 
   const deleteOrderHandler = (orderID) => {
     props.onDeleteOrder(orderID, props.token, props.userId);

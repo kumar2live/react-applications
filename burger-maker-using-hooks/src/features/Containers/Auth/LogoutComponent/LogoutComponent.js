@@ -6,10 +6,11 @@ import { Redirect } from 'react-router-dom';
 import * as ActionTypes from '../../../../store/actions/index';
 
 const LogoutComponent = (props) => {
+  const { resetAppState, onLogout } = props;
   useEffect(() => {
-    props.resetAppState();
-    props.onLogout();
-  }, []);
+    resetAppState();
+    onLogout();
+  }, [resetAppState, onLogout]);
 
   return (
     <React.Fragment>
