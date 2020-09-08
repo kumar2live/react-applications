@@ -5,8 +5,6 @@ import { ListGroup } from "react-bootstrap";
 export default function Conversations() {
   const { conversations, selectedConversationIndex } = useConversations();
 
-  console.log("conversations: ", conversations);
-
   return (
     <div>
       <ListGroup variant="flush">

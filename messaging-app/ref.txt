@@ -1,2 +1,6 @@
 npm i react-bootstrap bootstrap axios --save
 npm i uuid --save
+
+npm i --save socket.io-client
+npm i --save socket.io 
+npm i --save-dev nodemon 
